@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tablero de puntos · Estudiantina</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f2f4f7;--card:#fff;--ink:#14213d;--mute:#5b6679;--line:#dde2ea;--btn:#14213d;--btnink:#fff;--bad:#c0392b;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e141d;--card:#17202c;--ink:#eef2f8;--mute:#9aa6b8;--line:#263344;--btn:#eef2f8;--btnink:#0e141d;--bad:#ff7b6b;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0e141d;--card:#17202c;--ink:#eef2f8;--mute:#9aa6b8;--line:#263344;--btn:#eef2f8;--btnink:#0e141d;--bad:#ff7b6b;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Barlow,system-ui,sans-serif}
+main{max-width:860px;margin:0 auto;padding:20px 16px 48px}
+h1,h2,.num{font-family:"Barlow Condensed","Arial Narrow",sans-serif}
+h1{font-size:clamp(2.2rem,8vw,3.6rem);line-height:1;margin:8px 0 4px;font-weight:800}
+h2{font-size:1.5rem;margin:0 0 12px;font-weight:800}
+.sub{color:var(--mute);margin:0 0 16px}
+section{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:16px}
+.tabs{display:flex;gap:6px;overflow-x:auto;margin-bottom:16px;padding-bottom:4px}
+.tab{flex:none;padding:8px 16px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:700 1.05rem "Barlow Condensed",sans-serif;cursor:pointer;min-height:44px}
+.tab[aria-selected="true"]{background:var(--btn);color:var(--btnink);border-color:var(--btn)}
+.row{display:grid;grid-template-columns:44px 1fr auto;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.row:last-child{border:0}
+.pos{font-family:"Barlow Condensed",sans-serif;font-weight:800;font-size:2.2rem;line-height:1;text-align:center;color:var(--mute)}
+.row:nth-child(1) .pos{color:#d4a017}.row:nth-child(2) .pos{color:#8a97a8}.row:nth-child(3) .pos{color:#b06a2c}
+.name{font-weight:600;font-size:1.1rem}
+.det{color:var(--mute);font-size:.85rem}
+.bar{height:10px;border-radius:6px;background:var(--line);margin-top:6px;overflow:hidden}
+.bar i{display:block;height:100%;border-radius:6px;transition:width .5s}
+.num{font-size:2.4rem;font-weight:800;line-height:1;text-align:right}
+.num small{display:block;font-size:.9rem;font-weight:600;color:var(--mute)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:12px}
+label{display:flex;flex-direction:column;gap:4px;font-weight:500;font-size:.95rem}
+select,input,textarea{font:inherit;padding:10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);min-height:44px;width:100%}
+textarea{min-height:70px;resize:vertical}
+.main{background:var(--btn);color:var(--btnink);border:0;border-radius:10px;padding:10px 18px;font:700 1.05rem Barlow,sans-serif;cursor:pointer;min-height:44px}
+button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #3b82f6;outline-offset:2px}
+.ev{border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:12px}
+.evh{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:1.15rem}
+.add{display:flex;gap:8px;flex-wrap:wrap}.add input{flex:1;min-width:180px}
+.log{list-style:none;margin:12px 0 0;padding:0;max-height:300px;overflow:auto}
+.log li{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+.dot{width:10px;height:10px;border-radius:50%;flex:none}
+.pts{font-family:"Barlow Condensed",sans-serif;font-weight:800;font-size:1.3rem;min-width:52px;text-align:right}
+.pts.neg{color:var(--bad)}
+.grow{flex:1;min-width:0}.grow small{color:var(--mute);display:block}
+.x{background:none;border:0;color:var(--mute);cursor:pointer;font-size:1.1rem;min-width:36px;min-height:36px}
+.empty{color:var(--mute);margin:0 0 12px}
+details summary{cursor:pointer;font-weight:600}
+.cfg{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:12px 0}
+.danger{background:transparent;border:1px solid var(--bad);color:var(--bad);border-radius:8px;padding:8px 14px;font:600 .95rem Barlow,sans-serif;cursor:pointer;min-height:40px}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+</style>
+</head>
+<body>
+<main>
+<h1 id="titulo">Estudiantina</h1>
+<p class="sub">Tablero de puntos de los 6 cursos, organizado en 5 días.</p>
+<div class="tabs" id="tabs" role="tablist"></div>
+<section><h2 id="rt">Posiciones</h2><div id="rank"></div></section>
+<section id="area"></section>
+<section>
+<details>
+<summary>Configuración</summary>
+<h2 style="margin-top:14px;font-size:1.2rem">Nombres de los cursos</h2>
+<div class="cfg" id="names"></div>
+<h2 style="font-size:1.2rem">Puntos por puesto (en cada evento)</h2>
+<div class="cfg" id="scale"></div>
+<label style="max-width:380px">Título del evento<input id="ttl" type="text" maxlength="40"></label>
+<p style="margin:16px 0 8px"><button class="danger" id="reset" type="button">Borrar todo (eventos y puntos)</button></p>
+</details>
+</section>
+</main>
+<script>
+const COLORS=["#e63946","#f4a300","#2a9d8f","#3a86ff","#8e44ad","#e56b9b"];
+const SUG=["Mejor bandera","Mejor coreografía","Mejor mascota","Mejor disfraz","Mejor hinchada","Mejor canción","Torneo deportivo"];
+const fresh=()=>({title:"Estudiantina",names:["1.º año","2.º año","3.º año","4.º año","5.º año","6.º año"],scale:[50,40,30,20,10,5],days:Array.from({length:5},()=>({date:"",info:"",events:[]})),adj:[]});
+let S=fresh(),tab="t";
+try{const r=localStorage.getItem("estudiantina-v2");if(r){const p=JSON.parse(r);if(p&&p.days&&p.days.length===5)S=p}}catch(e){}
+const $=id=>document.getElementById(id);
+const save=()=>{try{localStorage.setItem("estudiantina-v2",JSON.stringify(S))}catch(e){}};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const dayPts=(c,d)=>S.days[d].events.reduce((a,e)=>a+e.r.reduce((s,v,p)=>s+(v===String(c)?S.scale[p]:0),0),0);
+const adjPts=c=>S.adj.filter(l=>l.c===c).reduce((a,l)=>a+l.p,0);
+const total=c=>S.days.reduce((a,_,d)=>a+dayPts(c,d),0)+adjPts(c);
+function rankHTML(list){
+  const max=Math.max(1,...list.map(x=>x.t));
+  return list.map((x,k)=>`<div class="row"><div class="pos">${k+1}</div><div><div class="name">${esc(S.names[x.i])}</div>${x.sub?`<div class="det">${x.sub}</div>`:""}<div class="bar"><i style="width:${Math.max(0,x.t)/max*100}%;background:${COLORS[x.i]}"></i></div></div><div class="num">${x.t}<small>puntos</small></div></div>`).join("");
+}
+function draw(){
+  document.title="Tablero de puntos · "+S.title;$("titulo").textContent=S.title;
+  $("tabs").innerHTML=[["t","Total"],...S.days.map((_,d)=>[String(d),"Día "+(d+1)])].map(([k,l])=>`<button class="tab" role="tab" data-t="${k}" aria-selected="${tab===k}">${l}</button>`).join("");
+  const isT=tab==="t",d=+tab;
+  const list=S.names.map((_,i)=>({i,t:isT?total(i):dayPts(i,d),sub:isT?S.days.map((_,k)=>`D${k+1}: ${dayPts(i,k)}`).join(" · ")+(adjPts(i)?` · Ajustes: ${adjPts(i)}`:""):""})).sort((a,b)=>b.t-a.t||a.i-b.i);
+  $("rt").textContent=isT?"Posiciones generales":"Posiciones del día "+(d+1);
+  $("rank").innerHTML=rankHTML(list);
+  const opts=S.names.map((n,i)=>`<option value="${i}">${esc(n)}</option>`).join("");
+  if(isT){
+    $("area").innerHTML=`<h2>Ajustes manuales</h2><p class="det" style="margin:0 0 12px">Para bonos o sanciones que no son de un evento (usá negativos para restar).</p><div class="grid"><label>Curso<select id="ac">${opts}</select></label><label>Puntos<input id="ap" type="number" step="1" value="5"></label><label>Motivo<input id="am" type="text" maxlength="80" placeholder="Ej.: Puntualidad"></label></div><button class="main" data-a="add">Aplicar ajuste</button><ul class="log">${S.adj.length?S.adj.map((l,k)=>`<li><span class="dot" style="background:${COLORS[l.c]}"></span><div class="grow"><strong>${esc(S.names[l.c])}</strong><small>${esc(l.d||"Sin motivo")}</small></div><span class="pts ${l.p<0?"neg":""}">${l.p>0?"+":""}${l.p}</span><button class="x" data-a="del" data-k="${k}" aria-label="Quitar ajuste">✕</button></li>`).join(""):""}</ul>`;
+  }else{
+    const D=S.days[d];
+    const evs=D.events.map((e,k)=>`<div class="ev"><div class="evh"><strong>${esc(e.n)}</strong><button class="x" data-a="delev" data-k="${k}" aria-label="Quitar evento">✕</button></div><div class="grid" style="margin:0">${S.scale.map((pt,p)=>`<label>${p+1}.º puesto · ${pt} pts<select data-k="${k}" data-p="${p}"><option value="">Sin asignar</option>${S.names.map((n,i)=>`<option value="${i}"${e.r[p]===String(i)?" selected":""}>${esc(n)}</option>`).join("")}</select></label>`).join("")}</div></div>`).join("");
+    $("area").innerHTML=`<h2>Día ${d+1}</h2><div class="grid"><label>Fecha<input id="df" type="text" maxlength="30" placeholder="Ej.: Lunes 24/11" value="${esc(D.date)}"></label></div><label style="margin-bottom:16px">Qué pasa este día<textarea id="di" maxlength="300" placeholder="Ej.: Desfile de banderas por la mañana y coreografías a la tarde">${esc(D.info)}</textarea></label><h2 style="font-size:1.25rem">Eventos del día</h2>${evs||'<p class="empty">Todavía no hay eventos. Agregá el primero.</p>'}<div class="add"><input id="en" list="sug" maxlength="60" placeholder="Nombre del evento (ej.: Mejor bandera)"><datalist id="sug">${SUG.map(s=>`<option value="${s}">`).join("")}</datalist><button class="main" data-a="addev">Agregar evento</button></div>`;
+  }
+}
+function addAdj(){const p=parseInt($("ap").value,10);if(isNaN(p))return $("ap").focus();S.adj.unshift({c:+$("ac").value,p,d:$("am").value.trim()});save();draw()}
+function addEv(){const n=$("en").value.trim();if(!n)return $("en").focus();S.days[+tab].events.push({n,r:["","","","","",""]});save();draw()}
+$("tabs").onclick=e=>{const b=e.target.closest(".tab");if(b){tab=b.dataset.t;draw()}};
+$("area").onclick=e=>{const b=e.target.closest("[data-a]");if(!b)return;const a=b.dataset.a,k=+b.dataset.k;
+  if(a==="add")addAdj();else if(a==="del"){S.adj.splice(k,1);save();draw()}
+  else if(a==="addev")addEv();else if(a==="delev"){S.days[+tab].events.splice(k,1);save();draw()}};
+$("area").onchange=e=>{const s=e.target;if(s.dataset.p===undefined)return;const ev=S.days[+tab].events[+s.dataset.k];
+  if(s.value!=="")ev.r=ev.r.map(v=>v===s.value?"":v);ev.r[+s.dataset.p]=s.value;save();draw()};
+$("area").oninput=e=>{const D=S.days[+tab];if(e.target.id==="df"){D.date=e.target.value;save()}if(e.target.id==="di"){D.info=e.target.value;save()}};
+$("area").onkeydown=e=>{if(e.key!=="Enter")return;if(e.target.id==="en"){e.preventDefault();addEv()}if(e.target.id==="ap"||e.target.id==="am"){e.preventDefault();addAdj()}};
+$("names").innerHTML=S.names.map((n,i)=>`<label>Curso ${i+1}<input data-n="${i}" value="${esc(n)}" maxlength="20"></label>`).join("");
+$("names").oninput=e=>{const i=e.target.dataset.n;if(i!==undefined){S.names[i]=e.target.value||"Curso "+(+i+1);save();draw()}};
+$("scale").innerHTML=S.scale.map((v,i)=>`<label>${i+1}.º puesto<input data-s="${i}" type="number" step="1" value="${v}"></label>`).join("");
+$("scale").oninput=e=>{const i=e.target.dataset.s;if(i!==undefined){S.scale[i]=parseInt(e.target.value,10)||0;save();draw()}};
+$("ttl").value=S.title;$("ttl").oninput=e=>{S.title=e.target.value||"Estudiantina";save();draw()};
+let armed=false;
+$("reset").onclick=()=>{const b=$("reset");if(!armed){armed=true;b.textContent="Tocá de nuevo para confirmar";setTimeout(()=>{armed=false;b.textContent="Borrar todo (eventos y puntos)"},4000)}else{const keep={title:S.title,names:S.names,scale:S.scale};S={...fresh(),...keep};save();draw();armed=false;b.textContent="Borrar todo (eventos y puntos)"}};
+draw();
+</script>
+</body>
+</html>
